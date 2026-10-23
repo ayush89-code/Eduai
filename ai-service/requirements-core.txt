@@ -1,0 +1,31 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pydantic-settings==2.5.2
+
+# File uploads (Step 4) - FastAPI needs this to parse multipart forms
+python-multipart==0.0.12
+
+# HTTP client for search APIs + page fetching (Step 4)
+httpx==0.27.2
+
+# DB / vector store (Step 5)
+sqlalchemy==2.0.35
+psycopg[binary]==3.2.2
+pgvector==0.3.4
+psycopg-pool==3.2.3
+
+# Document parsing (Step 4)
+pypdf==5.0.1
+python-docx==1.1.2
+python-pptx==1.0.2
+
+# Topic ingestion path (Step 4)
+tavily-python==0.5.0
+trafilatura==1.12.2
+
+# Auth (Step 3, validate JWTs issued by backend)
+pyjwt==2.9.0
+
+# Event streaming (Step 9)
+aiokafka==0.11.0

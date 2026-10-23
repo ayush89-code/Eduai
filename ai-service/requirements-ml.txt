@@ -1,0 +1,7 @@
+# RAG (Step 4-6). These pull in torch transitively via sentence-transformers
+# and are the largest downloads in the image - kept in their own
+# requirements file so Docker can cache the core layer independently.
+langchain==0.3.1
+langchain-community==0.3.1
+langchain-huggingface==0.1.0
+sentence-transformers==3.1.1

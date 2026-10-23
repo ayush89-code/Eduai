@@ -1,0 +1,122 @@
+name: eduai
+
+services:
+  # ---------- Datastore ----------
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: eduai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-eduai}
+      POSTGRES_USER: ${POSTGRES_USER:-eduai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-eduai_pass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-eduai}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------- Event streaming (Kafka, KRaft mode - no Zookeeper needed) ----------
+  # Using Apache Kafka's own official image - Bitnami retired most of their
+  # tagged images from Docker Hub in 2025, so bitnami/kafka:3.7 no longer resolves.
+  kafka:
+    image: apache/kafka:3.8.0
+    container_name: eduai-kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: eduai-kafka-ui
+    restart: unless-stopped
+    ports:
+      - "8085:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: eduai
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka
+
+  # ---------- Backend (Spring Boot) ----------
+  backend:
+    build:
+      context: ./backend
+    container_name: eduai-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-eduai}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-eduai}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-eduai_pass}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-in-prod-please}
+      AI_SERVICE_BASE_URL: http://ai-service:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  # ---------- AI Service (FastAPI) ----------
+  ai-service:
+    build:
+      context: ./ai-service
+    container_name: eduai-ai-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-eduai}:${POSTGRES_PASSWORD:-eduai_pass}@postgres:5432/${POSTGRES_DB:-eduai}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me-in-prod-please}
+      HUGGINGFACE_API_KEY: ${HUGGINGFACE_API_KEY:-}
+      SEARCH_PROVIDER: ${SEARCH_PROVIDER:-tavily}
+      SEARCH_MONTHLY_CAP: ${SEARCH_MONTHLY_CAP:-800}
+      TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+      SERPER_API_KEY: ${SERPER_API_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+
+  # ---------- Frontend (React + Tailwind, Vite dev server) ----------
+  frontend:
+    build:
+      context: ./frontend
+    container_name: eduai-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+      VITE_WS_BASE_URL: ws://localhost:8080
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

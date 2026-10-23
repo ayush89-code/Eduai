@@ -1,0 +1,32 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# backend
+backend/target/
+*.class
+.idea/
+*.iml
+
+# frontend
+frontend/node_modules/
+frontend/dist/
+
+# ai-service
+__pycache__/
+*.pyc
+.venv/
+venv/
+ai-service/.cache/
+.cache/
+models/
+
+# misc
+*.log
+.DS_Store
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log
