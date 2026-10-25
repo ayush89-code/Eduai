@@ -91,8 +91,9 @@ export default function DashboardPage() {
           <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">Coming next</h3>
           <ul className="grid gap-3 sm:grid-cols-2">
             {COMING[user.role].map((item) => (
-              <li key={item} className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-600">{item}</li>
-            //  COMING.TEACHER delete "Question paper builder (Step 7)"
+              <li key={item} className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-600">{item}
+              COMING.TEACHER delete "Question paper builder (Step 7)"
+              </li>
             ))}
           </ul>
         </section>
