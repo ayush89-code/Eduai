@@ -28,6 +28,12 @@ public class QuestionController {
         return service.list(principal, sourceId, status, type);
     }
 
+    /** Sources with questions + approved counts; feeds the source picker of the paper builder. */
+    @GetMapping("/banks")
+    public List<BankView> banks(@AuthenticationPrincipal AuthenticatedUser principal) {
+        return service.banks(principal);
+    }
+
     @PutMapping("/{id}")
     public QuestionView update(@AuthenticationPrincipal AuthenticatedUser principal, @PathVariable UUID id,
                                @Valid @RequestBody UpdateRequest req) {

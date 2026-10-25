@@ -39,4 +39,21 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     @Query(value = "SELECT DISTINCT eq.question_id FROM exam_questions eq WHERE eq.question_id IN (:ids)",
             nativeQuery = true)
     List<UUID> findUsedInExams(@Param("ids") Collection<UUID> ids);
+
+    interface BankRow {
+        UUID getId();
+        String getTitle();
+        long getApproved();
+        long getTotal();
+    }
+
+    @Query(value = """
+            SELECT s.id AS id, s.title AS title,
+                   COUNT(*) FILTER (WHERE q.status = 'APPROVED') AS approved, COUNT(*) AS total
+              FROM sources s JOIN questions q ON q.source_id = s.id
+             WHERE (:admin = TRUE OR s.owner_id = :userId)
+             GROUP BY s.id, s.title
+             ORDER BY MAX(q.created_at) DESC
+            """, nativeQuery = true)
+    List<BankRow> findBanks(@Param("userId") UUID userId, @Param("admin") boolean admin);
 }

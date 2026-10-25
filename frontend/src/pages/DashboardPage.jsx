@@ -73,6 +73,10 @@ export default function DashboardPage() {
               <div className="font-semibold text-indigo-900">Study sources</div>
               <div className="text-sm text-indigo-700">Upload material or enter a topic to build your question bank</div>
             </Link>
+            <Link to="/exams" className="mt-3 block rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 hover:bg-emerald-100">
+              <div className="font-semibold text-emerald-900">Exams</div>
+              <div className="text-sm text-emerald-700">Build question papers and mock exams from approved questions, then publish</div>
+            </Link>
           </section>
         )}
 
@@ -88,6 +92,7 @@ export default function DashboardPage() {
           <ul className="grid gap-3 sm:grid-cols-2">
             {COMING[user.role].map((item) => (
               <li key={item} className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-600">{item}</li>
+            //  COMING.TEACHER delete "Question paper builder (Step 7)"
             ))}
           </ul>
         </section>

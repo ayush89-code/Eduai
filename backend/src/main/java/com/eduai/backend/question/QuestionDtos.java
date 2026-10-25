@@ -43,4 +43,7 @@ public final class QuestionDtos {
     public record BulkSkipped(UUID id, String reason) {}
 
     public record BulkResult(int changed, List<BulkSkipped> skipped) {}
+
+    /** A source that has questions: how many are approved (usable in a paper) out of the total. */
+    public record BankView(UUID sourceId, String title, long approved, long total) {}
 }

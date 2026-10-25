@@ -53,6 +53,13 @@ public class QuestionService {
         return toViews(found);
     }
 
+    /** Sources of this teacher that have questions, with how many are approved (for the paper builder). */
+    @Transactional(readOnly = true)
+    public List<BankView> banks(AuthenticatedUser user) {
+        return questions.findBanks(user.id(), isAdmin(user)).stream()
+                .map(r -> new BankView(r.getId(), r.getTitle(), r.getApproved(), r.getTotal())).toList();
+    }
+
     // ---- editing ---------------------------------------------------------------
 
     @Transactional
@@ -220,7 +227,7 @@ public class QuestionService {
         return new ApiException(HttpStatus.UNPROCESSABLE_ENTITY, message);
     }
 
-    private List<QuestionView> toViews(List<Question> list) {
+    public List<QuestionView> toViews(List<Question> list) {
         if (list.isEmpty()) return List.of();
         List<UUID> ids = list.stream().map(Question::getId).toList();
         Map<UUID, List<OptionDto>> opts = options.findByQuestionIdInOrderByQuestionIdAscPositionAsc(ids).stream()
@@ -236,7 +243,7 @@ public class QuestionService {
                 !STRUCTURED.contains(q.getType()))).toList();
     }
 
-    private static BigDecimal marksOf(Question q) {
+    public static BigDecimal marksOf(Question q) {
         Object m = q.getPayload() == null ? null : q.getPayload().get("marks");
         if (m instanceof Number n) return new BigDecimal(n.toString());
         return BigDecimal.ONE;
