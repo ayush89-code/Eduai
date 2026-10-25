@@ -8,8 +8,13 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import SourcesPage from "./pages/SourcesPage";
 import ReviewPage from "./pages/ReviewPage";
- import PapersPage from "./pages/PapersPage";
-       import PaperBuilderPage from "./pages/PaperBuilderPage";
+import PapersPage from "./pages/PapersPage";
+import PaperBuilderPage from "./pages/PaperBuilderPage";
+import StudentExamsPage from "./pages/StudentExamsPage";
+import ExamPlayerPage from "./pages/ExamPlayerPage";
+import ResultPage from "./pages/ResultPage";
+import ExamResultsPage from "./pages/ExamResultsPage";
+import AttemptReviewPage from "./pages/AttemptReviewPage";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
@@ -36,7 +41,7 @@ export default function App() {
       .catch(() => setBackendStatus("DOWN"));
   }, []);
 
-    return (
+  return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
@@ -45,8 +50,13 @@ export default function App() {
           <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/sources" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><SourcesPage /></ProtectedRoute>} />
           <Route path="/sources/:sourceId/review" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><ReviewPage /></ProtectedRoute>} />
-         <Route path="/exams" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><PapersPage /></ProtectedRoute>} />
-       <Route path="/exams/:examId" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><PaperBuilderPage /></ProtectedRoute>} />
+          <Route path="/exams" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><PapersPage /></ProtectedRoute>} />
+          <Route path="/exams/:examId" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><PaperBuilderPage /></ProtectedRoute>} />
+          <Route path="/student/exams" element={<ProtectedRoute roles={["STUDENT"]}><StudentExamsPage /></ProtectedRoute>} />
+          <Route path="/student/attempts/:attemptId" element={<ProtectedRoute roles={["STUDENT"]}><ExamPlayerPage /></ProtectedRoute>} />
+          <Route path="/student/attempts/:attemptId/result" element={<ProtectedRoute roles={["STUDENT"]}><ResultPage /></ProtectedRoute>} />
+          <Route path="/exams/:examId/results" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><ExamResultsPage /></ProtectedRoute>} />
+          <Route path="/exams/:examId/results/:attemptId" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><AttemptReviewPage /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -71,7 +81,7 @@ export default function App() {
   //     </div>
   //   </div>
 
-  
+
   // );
-  
+
 }

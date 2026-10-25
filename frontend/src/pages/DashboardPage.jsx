@@ -11,8 +11,8 @@ const ROLE_STYLE = {
 
 const COMING = {
   ADMIN: ["User management", "Platform overview"],
-  TEACHER: ["Question paper builder (Step 7)", "Live proctoring dashboard (Step 10)"],
-  STUDENT: ["Available exams (Step 8)", "Take an exam (Step 8)", "My results (Step 11)"],
+  TEACHER: ["Live proctoring dashboard (Step 10)"],
+  STUDENT: ["My results (Step 11)"],
 };
 
 function AdminUsers() {
@@ -79,7 +79,14 @@ export default function DashboardPage() {
             </Link>
           </section>
         )}
-
+        {user.role === "STUDENT" && (
+          <section>
+            <Link to="/student/exams" className="block rounded-xl border border-indigo-200 bg-indigo-50 px-5 py-4 hover:bg-indigo-100">
+              <div className="font-semibold text-indigo-900">My exams</div>
+              <div className="text-sm text-indigo-700">See the exams open for you, take them and view your results</div>
+            </Link>
+          </section>
+        )}
         {user.role === "ADMIN" && (
           <section>
             <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">All users</h3>
@@ -92,8 +99,8 @@ export default function DashboardPage() {
           <ul className="grid gap-3 sm:grid-cols-2">
             {COMING[user.role].map((item) => (
               <li key={item} className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-600">{item}
-              COMING.TEACHER delete "Question paper builder (Step 7)"
               </li>
+              
             ))}
           </ul>
         </section>

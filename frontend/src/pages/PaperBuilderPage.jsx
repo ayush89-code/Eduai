@@ -116,14 +116,14 @@ export default function PaperBuilderPage() {
   const available = useMemo(() => bank.filter((q) => !inPaper.has(q.id)
     && (filter.type === "ALL" || q.type === filter.type)
     && (!filter.text || q.questionText.toLowerCase().includes(filter.text.toLowerCase()) || q.topic.toLowerCase().includes(filter.text.toLowerCase()))),
-  [bank, inPaper, filter]);
+    [bank, inPaper, filter]);
 
   const run = async (fn) => {
     setBusy(true); setError(""); setNotes([]);
     try { return await fn(); } catch (e) { setError(errorMessage(e)); return false; } finally { setBusy(false); }
   };
   const edit = (next) => { setPaper(next); setDirty(true); };
-  const move = (i, d) => { const n = [...paper]; [n[i], n[i + d]] = [n[i + d], n[i]]; edit(n); };
+  const move = (i, d) => { const n = [...paper];[n[i], n[i + d]] = [n[i + d], n[i]]; edit(n); };
 
   const savePaper = () => run(async () => {
     const { data } = await api.put(`/api/teacher/exams/${examId}/questions`, { items: paper.map((p) => ({ questionId: p.q.id, marks: Number(p.marks) })) });
@@ -160,7 +160,10 @@ export default function PaperBuilderPage() {
             <h1 className="text-xl font-bold text-gray-900">{exam.title}</h1>
             <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[exam.status]}`}>{exam.status}</span>
           </div>
-          <Link to="/exams" className="text-sm text-indigo-600 hover:underline">← All exams</Link>
+          <div className="flex items-center gap-4">
+            {exam.status !== "DRAFT" && <Link to={`/exams/${exam.id}/results`} className="text-sm font-semibold text-indigo-600 hover:underline">Results</Link>}
+            <Link to="/exams" className="text-sm text-indigo-600 hover:underline">← All exams</Link>
+          </div>
         </div>
       </header>
 
