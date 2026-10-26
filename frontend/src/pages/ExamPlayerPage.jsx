@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api, { errorMessage } from "../api/client";
 import { parseMap } from "../components/ResultItemCard";
+import ProctorGuard from "../proctor/ProctorGuard";
 
 const input = "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500";
 const L = (i) => String.fromCharCode(65 + i);
@@ -195,8 +196,7 @@ export default function ExamPlayerPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Step 9-10 hook: the proctoring component (webcam face check, tab-switch detection) mounts here, e.g.
-          <ProctorGuard attemptId={attemptId} /> */}
+      <ProctorGuard attemptId={attemptId} />
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <h1 className="truncate text-lg font-bold text-gray-900">{att.examTitle}</h1>

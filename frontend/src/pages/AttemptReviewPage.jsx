@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api, { errorMessage } from "../api/client";
 import ResultItemCard from "../components/ResultItemCard";
+import ProctorPanel from "../components/ProctorPanel";
 
 function MarkBox({ item, busy, onSave }) {
   const [marks, setMarks] = useState(item.awarded == null ? "" : String(Number(item.awarded)));
@@ -67,6 +68,7 @@ export default function AttemptReviewPage() {
             : <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">Fully marked</p>}
         </div>
         {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+        <ProctorPanel attemptId={attemptId} />
         <ul className="space-y-3">
           {detail.items.map((it) => (
             <ResultItemCard key={`${it.questionId}-${it.awarded}-${it.feedback}`} item={it}>
