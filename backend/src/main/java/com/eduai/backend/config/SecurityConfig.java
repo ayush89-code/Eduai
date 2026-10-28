@@ -31,26 +31,28 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService,
-                                           @Qualifier("corsConfigurationSource") CorsConfigurationSource cors,
-                                           ObjectMapper mapper) throws Exception {
+            @Qualifier("corsConfigurationSource") CorsConfigurationSource cors,
+            ObjectMapper mapper) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())                       // stateless JWT API, no cookies
-            .cors(c -> c.configurationSource(cors))
-            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/health", "/actuator/health/**").permitAll()
-                .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/teacher/**").hasAnyRole("TEACHER", "ADMIN")
-                .requestMatchers("/api/student/**").hasRole("STUDENT")
-                .anyRequest().authenticated())
-            .exceptionHandling(e -> e
-                .authenticationEntryPoint((req, res, ex) -> writeError(mapper, res,
-                        HttpStatus.UNAUTHORIZED, "Authentication required"))
-                .accessDeniedHandler((req, res, ex) -> writeError(mapper, res,
-                        HttpStatus.FORBIDDEN, "You do not have permission to access this resource")))
-            .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable()) // stateless JWT API, no cookies
+                .cors(c -> c.configurationSource(cors))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/health", "/actuator/health/**").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/teacher/**").hasAnyRole("TEACHER", "ADMIN")
+                        .requestMatchers("/api/student/**").hasRole("STUDENT")
+                        .requestMatchers("/ws/**").permitAll()
+
+                        .anyRequest().authenticated())
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((req, res, ex) -> writeError(mapper, res,
+                                HttpStatus.UNAUTHORIZED, "Authentication required"))
+                        .accessDeniedHandler((req, res, ex) -> writeError(mapper, res,
+                                HttpStatus.FORBIDDEN, "You do not have permission to access this resource")))
+                .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -59,7 +61,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /** Built from the UserDetailsService + PasswordEncoder beans; used for login only. */
+    /**
+     * Built from the UserDetailsService + PasswordEncoder beans; used for login
+     * only.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
         return cfg.getAuthenticationManager();
@@ -79,7 +84,7 @@ public class SecurityConfig {
     }
 
     private static void writeError(ObjectMapper mapper, jakarta.servlet.http.HttpServletResponse res,
-                                   HttpStatus status, String message) throws java.io.IOException {
+            HttpStatus status, String message) throws java.io.IOException {
         res.setStatus(status.value());
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         mapper.writeValue(res.getOutputStream(), GlobalExceptionHandler.body(status, message, null).getBody());

@@ -11,8 +11,8 @@ const ROLE_STYLE = {
 
 const COMING = {
   ADMIN: ["User management", "Platform overview"],
-  TEACHER: ["Live proctoring dashboard (Step 10)"],
-  STUDENT: ["My results (Step 11)"],
+  TEACHER: [],
+  STUDENT: [],
 };
 
 function AdminUsers() {
@@ -85,6 +85,10 @@ export default function DashboardPage() {
               <div className="font-semibold text-indigo-900">My exams</div>
               <div className="text-sm text-indigo-700">See the exams open for you, take them and view your results</div>
             </Link>
+            <Link to="/student/progress" className="mt-3 block rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 hover:bg-emerald-100">
+              <div className="font-semibold text-emerald-900">My progress</div>
+              <div className="text-sm text-emerald-700">Your score history, weak topics and what to revise</div>
+            </Link>
           </section>
         )}
         {user.role === "ADMIN" && (
@@ -100,7 +104,7 @@ export default function DashboardPage() {
             {COMING[user.role].map((item) => (
               <li key={item} className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-3 text-sm text-gray-600">{item}
               </li>
-              
+
             ))}
           </ul>
         </section>

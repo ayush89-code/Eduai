@@ -15,6 +15,9 @@ import ExamPlayerPage from "./pages/ExamPlayerPage";
 import ResultPage from "./pages/ResultPage";
 import ExamResultsPage from "./pages/ExamResultsPage";
 import AttemptReviewPage from "./pages/AttemptReviewPage";
+import LiveDashboardPage from "./pages/LiveDashboardPage";
+import ExamAnalyticsPage from "./pages/ExamAnalyticsPage";
+import MyProgressPage from "./pages/MyProgressPage";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
@@ -57,6 +60,9 @@ export default function App() {
           <Route path="/student/attempts/:attemptId/result" element={<ProtectedRoute roles={["STUDENT"]}><ResultPage /></ProtectedRoute>} />
           <Route path="/exams/:examId/results" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><ExamResultsPage /></ProtectedRoute>} />
           <Route path="/exams/:examId/results/:attemptId" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><AttemptReviewPage /></ProtectedRoute>} />
+          <Route path="/exams/:examId/live" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><LiveDashboardPage /></ProtectedRoute>} />
+          <Route path="/exams/:examId/analytics" element={<ProtectedRoute roles={["TEACHER", "ADMIN"]}><ExamAnalyticsPage /></ProtectedRoute>} />
+          <Route path="/student/progress" element={<ProtectedRoute roles={["STUDENT"]}><MyProgressPage /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

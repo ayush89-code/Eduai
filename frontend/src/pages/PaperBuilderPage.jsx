@@ -196,7 +196,8 @@ export default function PaperBuilderPage() {
             {draft && <button disabled={busy || (paper.length === 0)} onClick={() => post("publish")} className={`${btn} bg-emerald-600 text-white hover:bg-emerald-700`}>Publish</button>}
             {exam.status === "PUBLISHED" && <button disabled={busy} onClick={() => post("unpublish")} className={`${btn} border border-gray-300 hover:bg-gray-100`}>Unpublish</button>}
             {exam.status === "PUBLISHED" && <button disabled={busy} onClick={() => post("close")} className={`${btn} border border-red-300 text-red-700 hover:bg-red-50`}>Close exam</button>}
-            {draft && <button disabled={busy} onClick={remove} className={`${btn} ml-auto border border-red-300 text-red-700 hover:bg-red-50`}>Delete</button>}
+           { exam.status === "PUBLISHED" && <Link to={`/exams/${exam.id}/live`} className="text-indigo-600 hover:underline">Live monitoring</Link>}
+           {draft && <button disabled={busy} onClick={remove} className={`${btn} ml-auto border border-red-300 text-red-700 hover:bg-red-50`}>Delete</button>}
           </div>
           {!draft && <p className="mt-2 text-xs text-gray-500">The paper is locked while the exam is {exam.status.toLowerCase()}. Unpublish it to make changes.</p>}
         </section>

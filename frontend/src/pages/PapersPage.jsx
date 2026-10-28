@@ -74,16 +74,21 @@ export default function PapersPage() {
         <ul className="space-y-3">
           {exams?.map((x) => (
             <li key={x.id}>
-              <Link to={`/exams/${x.id}`} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-5 py-4 hover:border-indigo-300">
-                <div>
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-5 py-4 hover:border-indigo-300">
+                <Link to={`/exams/${x.id}`} className="min-w-0 flex-1">
                   <div className="font-semibold text-gray-900">{x.title}</div>
                   <div className="text-xs text-gray-500">
                     {x.questionCount} question{x.questionCount !== 1 ? "s" : ""} · {Number(x.totalMarks)} marks · {x.durationMinutes} min
                     {x.startsAt && ` · opens ${new Date(x.startsAt).toLocaleString()}`}
                   </div>
+                </Link>
+                <div className="flex items-center gap-4 text-sm">
+                  {x.status === "PUBLISHED" && <Link to={`/exams/${x.id}/live`} className="text-indigo-600 hover:underline">Live</Link>}
+                  {x.status !== "DRAFT" && <Link to={`/exams/${x.id}/results`} className="text-indigo-600 hover:underline">Results</Link>}
+                  {x.status !== "DRAFT" && <Link to={`/exams/${x.id}/analytics`} className="text-indigo-600 hover:underline">Analytics</Link>}
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[x.status]}`}>{x.status}</span>
                 </div>
-                <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLE[x.status]}`}>{x.status}</span>
-              </Link>
+              </div>
             </li>
           ))}
         </ul>
